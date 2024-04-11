@@ -1084,6 +1084,9 @@ class QuillRawEditorState extends EditorState
         _selectionOverlay = null;
       } else {
         _selectionOverlay!.update(textEditingValue);
+        if (textEditingValue.text.isNotEmpty) {
+          _selectionOverlay!.handlesVisible = _shouldShowSelectionHandles();
+        }
       }
     } else if (_hasFocus) {
       _selectionOverlay = EditorTextSelectionOverlay(
