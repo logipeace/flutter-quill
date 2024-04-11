@@ -1,4 +1,4 @@
-import '../../../../quill_delta.dart';
+import '../../quill_delta.dart';
 import 'container.dart';
 import 'line.dart';
 import 'node.dart';
@@ -13,7 +13,7 @@ import 'node.dart';
 /// - Text Alignment
 /// - Text Direction
 /// - Code Block
-base class Block extends QuillContainer<Line?> {
+base class Block extends Container<Line?> {
   /// Creates new unmounted [Block].
   @override
   Node newInstance() => Block();
@@ -47,7 +47,7 @@ base class Block extends QuillContainer<Line?> {
         block.previous is Block &&
         prev!.style == block.style) {
       block
-        ..moveChildToNewParent(prev as QuillContainer<Node?>?)
+        ..moveChildToNewParent(prev as Container<Node?>?)
         ..unlink();
       block = prev as Block;
     }

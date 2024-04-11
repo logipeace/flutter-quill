@@ -137,27 +137,6 @@ class FlutterQuillLocalizationsCs extends FlutterQuillLocalizations {
   String get headerStyle => 'Styl záhlaví';
 
   @override
-  String get normal => 'Normální text';
-
-  @override
-  String get heading1 => 'Nadpis 1';
-
-  @override
-  String get heading2 => 'Nadpis 2';
-
-  @override
-  String get heading3 => 'Nadpis 3';
-
-  @override
-  String get heading4 => 'Nadpis 4';
-
-  @override
-  String get heading5 => 'Nadpis 5';
-
-  @override
-  String get heading6 => 'Nadpis 6';
-
-  @override
   String get numberedList => 'Číslovaný seznam';
 
   @override
@@ -221,11 +200,6 @@ class FlutterQuillLocalizationsCs extends FlutterQuillLocalizations {
   String get savedUsingLocalStorage => 'Uloženo lokálně';
 
   @override
-  String theImageHasBeenSavedAt(String imagePath) {
-    return 'Obrázek byl uložen v: $imagePath';
-  }
-
-  @override
   String get errorWhileSavingImage => 'Chyba při ukládání obrázku';
 
   @override
@@ -254,22 +228,4 @@ class FlutterQuillLocalizationsCs extends FlutterQuillLocalizations {
 
   @override
   String get insertImage => 'Vložit obrázek';
-
-  @override
-  String get pickAPhotoFromYourGallery => 'Vybrat fotku z galerie';
-
-  @override
-  String get takeAPhotoUsingYourCamera => 'Použít fotoaparát';
-
-  @override
-  String get pasteAPhotoUsingALink => 'Vložit fotografii pomocí odkazu';
-
-  @override
-  String get pickAVideoFromYourGallery => 'Vyberte video z galerie';
-
-  @override
-  String get recordAVideoUsingYourCamera => 'Natočit video pomocí kamery';
-
-  @override
-  String get pasteAVideoUsingALink => 'Vložit video pomocí odkazu';
 }

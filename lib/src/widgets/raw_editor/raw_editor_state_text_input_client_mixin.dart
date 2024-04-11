@@ -6,11 +6,11 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' show MediaQuery;
 
 import '../../models/documents/document.dart';
 import '../../utils/delta.dart';
 import '../editor/editor.dart';
-import 'raw_editor.dart';
 
 mixin RawEditorStateTextInputClientMixin on EditorState
     implements TextInputClient {
@@ -31,7 +31,7 @@ mixin RawEditorStateTextInputClientMixin on EditorState
   /// - cmd/ctrl+a to select all.
   /// - Changing the selection using a physical keyboard.
   bool get shouldCreateInputConnection =>
-      kIsWeb || !widget.configurations.readOnly;
+      kIsWeb || !widget.configurations.isReadOnly;
 
   /// Returns `true` if there is open input connection.
   bool get hasConnection =>
@@ -59,11 +59,12 @@ mixin RawEditorStateTextInputClientMixin on EditorState
         this,
         TextInputConfiguration(
           inputType: TextInputType.multiline,
-          readOnly: widget.configurations.readOnly,
+          readOnly: widget.configurations.isReadOnly,
           inputAction: widget.configurations.textInputAction,
-          enableSuggestions: !widget.configurations.readOnly,
+          enableSuggestions: !widget.configurations.isReadOnly,
           keyboardAppearance: widget.configurations.keyboardAppearance ??
               CupertinoTheme.maybeBrightnessOf(context) ??
+              MediaQuery.maybePlatformBrightnessOf(context) ??
               Theme.of(context).brightness,
           textCapitalization: widget.configurations.textCapitalization,
           allowedMimeTypes:
@@ -200,11 +201,7 @@ mixin RawEditorStateTextInputClientMixin on EditorState
           .updateSelection(value.selection, ChangeSource.local);
     } else {
       widget.configurations.controller.replaceText(
-        diff.start,
-        diff.deleted.length,
-        diff.inserted,
-        value.selection,
-      );
+          diff.start, diff.deleted.length, diff.inserted, value.selection);
     }
   }
 

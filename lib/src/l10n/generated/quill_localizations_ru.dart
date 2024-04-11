@@ -137,27 +137,6 @@ class FlutterQuillLocalizationsRu extends FlutterQuillLocalizations {
   String get headerStyle => 'Header style';
 
   @override
-  String get normal => 'Normal';
-
-  @override
-  String get heading1 => 'Heading 1';
-
-  @override
-  String get heading2 => 'Heading 2';
-
-  @override
-  String get heading3 => 'Heading 3';
-
-  @override
-  String get heading4 => 'Heading 4';
-
-  @override
-  String get heading5 => 'Heading 5';
-
-  @override
-  String get heading6 => 'Heading 6';
-
-  @override
   String get numberedList => 'Numbered list';
 
   @override
@@ -221,11 +200,6 @@ class FlutterQuillLocalizationsRu extends FlutterQuillLocalizations {
   String get savedUsingLocalStorage => 'Saved using the local storage';
 
   @override
-  String theImageHasBeenSavedAt(String imagePath) {
-    return 'The image has been saved at: $imagePath';
-  }
-
-  @override
   String get errorWhileSavingImage => 'Error while saving image';
 
   @override
@@ -253,24 +227,4 @@ class FlutterQuillLocalizationsRu extends FlutterQuillLocalizations {
 
   @override
   String get insertImage => 'Вставить изображение';
-
-  @override
-  String get pickAPhotoFromYourGallery => 'Выберите фотографю из вашей галереи';
-
-  @override
-  String get takeAPhotoUsingYourCamera =>
-      'Создайте фотографю, использую фотокамеру';
-
-  @override
-  String get pasteAPhotoUsingALink => 'Вставьте фотографию, используя ссылку';
-
-  @override
-  String get pickAVideoFromYourGallery => 'Выберете видео из вашей галереи';
-
-  @override
-  String get recordAVideoUsingYourCamera =>
-      'Запишите видео, используя вдеокамеру';
-
-  @override
-  String get pasteAVideoUsingALink => 'Paste a video using a link';
 }

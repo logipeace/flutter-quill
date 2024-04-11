@@ -1,16 +1,13 @@
-import 'dart:async' show StreamController;
+import 'dart:async';
 
-import 'package:meta/meta.dart';
-
-import '../../../quill_delta.dart';
-import '../../widgets/quill/embeds.dart';
+import '../../widgets/embeds.dart';
+import '../quill_delta.dart';
 import '../rules/rule.dart';
 import '../structs/doc_change.dart';
 import '../structs/history_changed.dart';
 import '../structs/offset_value.dart';
 import '../structs/segment_leaf_node.dart';
 import 'attribute.dart';
-import 'delta_x.dart';
 import 'history.dart';
 import 'nodes/block.dart';
 import 'nodes/container.dart';
@@ -56,13 +53,12 @@ class Document {
     _rules.setCustomRules(customRules);
   }
 
-  final StreamController<DocChange> documentChangeObserver =
-      StreamController.broadcast();
+  final StreamController<DocChange> _observer = StreamController.broadcast();
 
-  final History history = History();
+  final History _history = History();
 
   /// Stream of [DocChange]s applied to this document.
-  Stream<DocChange> get changes => documentChangeObserver.stream;
+  Stream<DocChange> get changes => _observer.stream;
 
   /// Inserts [data] in this document at specified [index].
   ///
@@ -111,42 +107,23 @@ class Document {
   /// Returns an instance of [Delta] actually composed into this document.
   Delta replace(int index, int len, Object? data) {
     assert(index >= 0);
-    assert(data is String || data is Embeddable || data is Delta);
+    assert(data is String || data is Embeddable);
+
+    final dataIsNotEmpty = (data is String) ? data.isNotEmpty : true;
+
+    assert(dataIsNotEmpty || len > 0);
 
     var delta = Delta();
 
-    if (data is Delta) {
-      // move to insertion point and add the inserted content
-      if (index > 0) {
-        delta.retain(index);
-      }
+    // We have to insert before applying delete rules
+    // Otherwise delete would be operating on stale document snapshot.
+    if (dataIsNotEmpty) {
+      delta = insert(index, data, replaceLength: len);
+    }
 
-      // remove any text we are replacing
-      if (len > 0) {
-        delta.delete(len);
-      }
-
-      // add the pasted content
-      for (final op in data.operations) {
-        delta.push(op);
-      }
-
-      compose(delta, ChangeSource.local);
-    } else {
-      final dataIsNotEmpty = (data is String) ? data.isNotEmpty : true;
-
-      assert(dataIsNotEmpty || len > 0);
-
-      // We have to insert before applying delete rules
-      // Otherwise delete would be operating on stale document snapshot.
-      if (dataIsNotEmpty) {
-        delta = insert(index, data, replaceLength: len);
-      }
-
-      if (len > 0) {
-        final deleteDelta = delete(index, len);
-        delta = delta.compose(deleteDelta);
-      }
+    if (len > 0) {
+      final deleteDelta = delete(index, len);
+      delta = delta.compose(deleteDelta);
     }
 
     return delta;
@@ -235,7 +212,7 @@ class Document {
     if (res.node is Line) {
       return res;
     }
-    final block = res.node as Block; // TODO: Can be nullable, handle this case
+    final block = res.node as Block;
     return block.queryChild(res.offset, true);
   }
 
@@ -308,7 +285,7 @@ class Document {
   ///
   /// In case the [change] is invalid, behavior of this method is unspecified.
   void compose(Delta delta, ChangeSource changeSource) {
-    assert(!documentChangeObserver.isClosed);
+    assert(!_observer.isClosed);
     delta.trim();
     assert(delta.isNotEmpty);
 
@@ -343,21 +320,21 @@ class Document {
       throw StateError('Compose failed');
     }
     final change = DocChange(originalDelta, delta, changeSource);
-    documentChangeObserver.add(change);
-    history.handleDocChange(change);
+    _observer.add(change);
+    _history.handleDocChange(change);
   }
 
   HistoryChanged undo() {
-    return history.undo(this);
+    return _history.undo(this);
   }
 
   HistoryChanged redo() {
-    return history.redo(this);
+    return _history.redo(this);
   }
 
-  bool get hasUndo => history.hasUndo;
+  bool get hasUndo => _history.hasUndo;
 
-  bool get hasRedo => history.hasRedo;
+  bool get hasRedo => _history.hasRedo;
 
   static Delta _transform(Delta delta) {
     final res = Delta();
@@ -407,8 +384,8 @@ class Document {
   }
 
   void close() {
-    documentChangeObserver.close();
-    history.clear();
+    _observer.close();
+    _history.clear();
   }
 
   /// Returns plain text representation of this document.
@@ -422,11 +399,9 @@ class Document {
 
   void _loadDocument(Delta doc) {
     if (doc.isEmpty) {
-      throw ArgumentError.value(
-          doc.toString(), 'Document Delta cannot be empty.');
+      throw ArgumentError.value(doc, 'Document Delta cannot be empty.');
     }
 
-    // print(doc.last.data.runtimeType);
     assert((doc.last.data as String).endsWith('\n'));
 
     var offset = 0;
@@ -465,12 +440,6 @@ class Document {
         delta.first.data == '\n' &&
         delta.first.key == 'insert';
   }
-
-  /// Convert the HTML Raw string to [Document]
-  @experimental
-  static Document fromHtml(String html) {
-    return Document.fromDelta(DeltaX.fromHtml(html));
-  }
 }
 
 /// Source of a [Change].
@@ -480,7 +449,4 @@ enum ChangeSource {
 
   /// Change originated from a remote action.
   remote,
-
-  /// Silent change.
-  silent;
 }

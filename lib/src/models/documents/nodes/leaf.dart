@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import '../../../../quill_delta.dart';
-import '../../../widgets/quill/embeds.dart';
+import '../../../widgets/embeds.dart';
+import '../../quill_delta.dart';
 import '../style.dart';
 import 'embeddable.dart';
 import 'line.dart';
@@ -25,6 +25,13 @@ abstract base class Leaf extends Node {
   /// [Embed] if this is an [BlockEmbed].
   Object get value => _value;
   Object _value;
+
+  @override
+  void applyStyle(Style value) {
+    assert(value.isInline || value.isIgnored || value.isEmpty,
+        'Unable to apply Style to leaf: $value');
+    super.applyStyle(value);
+  }
 
   @override
   Line? get parent => super.parent as Line?;

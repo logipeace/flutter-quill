@@ -1,11 +1,10 @@
 import 'package:meta/meta.dart' show immutable;
 
-import '../../../quill_delta.dart';
-import '../../extensions/uri_ext.dart';
 import '../../models/documents/document.dart';
 import '../documents/attribute.dart';
 import '../documents/nodes/embeddable.dart';
 import '../documents/style.dart';
+import '../quill_delta.dart';
 import 'rule.dart';
 
 /// A heuristic rule for insert operations.
@@ -521,7 +520,8 @@ class AutoFormatLinksRule extends InsertRule {
     try {
       final cand = (prev.data as String).split('\n').last.split(' ').last;
       final link = Uri.parse(cand);
-      if (!link.isHttpBasedUrl()) {
+      // TODO: Can be improved a little
+      if (!['https', 'http'].contains(link.scheme)) {
         return null;
       }
       final attributes = prev.attributes ?? <String, dynamic>{};

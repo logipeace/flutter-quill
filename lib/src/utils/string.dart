@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart' show Alignment, TextAlign;
+import 'package:flutter/cupertino.dart';
 
 Map<String, String> parseKeyValuePairs(String s, Set<String> targetKeys) {
   final result = <String, String>{};
@@ -50,14 +50,4 @@ Alignment getAlignment(String? cssAlignment) {
     Alignment.bottomCenter,
     Alignment.bottomRight
   ][index];
-}
-
-TextAlign? getTextAlign(String value) {
-  return switch (value) {
-    'center' => TextAlign.center,
-    'right' => TextAlign.right,
-    'left' => TextAlign.left,
-    'justify' => null,
-    Object() => null,
-  };
 }

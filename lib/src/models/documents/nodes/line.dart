@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 
-import '../../../../quill_delta.dart';
-import '../../../widgets/quill/embeds.dart';
+import '../../../widgets/embeds.dart';
+import '../../quill_delta.dart';
 import '../../structs/offset_value.dart';
 import '../attribute.dart';
 import '../style.dart';
@@ -19,7 +19,7 @@ import 'node.dart';
 ///
 /// When a line contains an embed, it fully occupies the line, no other embeds
 /// or text nodes are allowed.
-base class Line extends QuillContainer<Leaf?> {
+base class Line extends Container<Leaf?> {
   @override
   Leaf get defaultChild => QuillText();
 
@@ -362,7 +362,7 @@ base class Line extends QuillContainer<Leaf?> {
     void handle(Style style) {
       for (final attr in result.values) {
         if (!style.containsKey(attr.key) ||
-            (style.attributes[attr.key]?.value != attr.value)) {
+            (style.attributes[attr.key] != attr.value)) {
           excluded.add(attr);
         }
       }
@@ -390,7 +390,6 @@ base class Line extends QuillContainer<Leaf?> {
     final remaining = len - local;
     if (remaining > 0 && nextLine != null) {
       final rest = nextLine!.collectStyle(0, remaining);
-      result = result.mergeAll(rest);
       handle(rest);
     }
 

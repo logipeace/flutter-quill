@@ -16,12 +16,14 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-            home: Scaffold(
-              body: QuillSimpleToolbar(
-                configurations: QuillSimpleToolbarConfigurations(
-                  controller: controller,
+            home: QuillProvider(
+              configurations: QuillConfigurations(
+                controller: controller,
+              ),
+              child: const QuillToolbar(
+                configurations: QuillToolbarConfigurations(
                   showRedo: false,
-                  customButtons: const [
+                  customButtons: [
                     QuillToolbarCustomButtonOptions(
                       tooltip: tooltip,
                     )
@@ -38,19 +40,19 @@ void main() {
           matchRoot: true,
         );
         expect(builtinFinder, findsOneWidget);
-        // final builtinButton =
-        //     builtinFinder.evaluate().first.widget as QuillToolbarIconButton;
+        final builtinButton =
+            builtinFinder.evaluate().first.widget as QuillToolbarIconButton;
 
         final customFinder = find.descendant(
-            of: find.byType(QuillToolbar),
+            of: find.byType(QuillBaseToolbar),
             matching: find.byWidgetPredicate((widget) =>
                 widget is QuillToolbarIconButton && widget.tooltip == tooltip),
             matchRoot: true);
         expect(customFinder, findsOneWidget);
-        // final customButton =
-        //     customFinder.evaluate().first.widget as QuillToolbarIconButton;
+        final customButton =
+            customFinder.evaluate().first.widget as QuillToolbarIconButton;
 
-        // expect(customButton.fillColor, equals(builtinButton.fillColor));
+        expect(customButton.fillColor, equals(builtinButton.fillColor));
       });
     });
 
@@ -62,8 +64,7 @@ void main() {
         controller = QuillController.basic();
         editor = QuillEditor.basic(
           // ignore: avoid_redundant_argument_values
-          configurations: QuillEditorConfigurations(
-            controller: controller,
+          configurations: const QuillEditorConfigurations(
             // ignore: avoid_redundant_argument_values
             readOnly: false,
           ),
@@ -77,9 +78,12 @@ void main() {
       testWidgets('Refocus editor after controller clears document',
           (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Column(
-              children: [editor],
+          QuillProvider(
+            configurations: QuillConfigurations(controller: controller),
+            child: MaterialApp(
+              home: Column(
+                children: [editor],
+              ),
             ),
           ),
         );
@@ -95,9 +99,12 @@ void main() {
 
       testWidgets('Refocus editor after removing block attribute',
           (tester) async {
-        await tester.pumpWidget(MaterialApp(
-          home: Column(
-            children: [editor],
+        await tester.pumpWidget(QuillProvider(
+          configurations: QuillConfigurations(controller: controller),
+          child: MaterialApp(
+            home: Column(
+              children: [editor],
+            ),
           ),
         ));
         await tester.quillEnterText(find.byType(QuillEditor), 'test\n');
@@ -113,9 +120,12 @@ void main() {
 
       testWidgets('Tap checkbox in unfocused editor', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Column(
-              children: [editor],
+          QuillProvider(
+            configurations: QuillConfigurations(controller: controller),
+            child: MaterialApp(
+              home: Column(
+                children: [editor],
+              ),
             ),
           ),
         );

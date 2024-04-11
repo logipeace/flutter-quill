@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+import '../../extensions/quill_provider.dart';
 
 class QuillEditorCheckboxPoint extends StatefulWidget {
   const QuillEditorCheckboxPoint({
@@ -73,6 +76,20 @@ class QuillEditorCheckboxPointState extends State<QuillEditorCheckboxPoint> {
         ),
       ),
     );
+    if (context.requireQuillSharedConfigurations.animationConfigurations
+        .checkBoxPointItem) {
+      return Animate(
+        effects: const [
+          SlideEffect(
+            duration: Duration(milliseconds: 70),
+          ),
+          ScaleEffect(
+            duration: Duration(milliseconds: 70),
+          )
+        ],
+        child: child,
+      );
+    }
     return child;
   }
 }

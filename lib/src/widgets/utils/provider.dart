@@ -3,31 +3,89 @@ import 'package:flutter/widgets.dart'
     show BuildContext, InheritedWidget, Widget;
 
 import '../../models/config/quill_configurations.dart';
-import '../../models/config/toolbar/toolbar_configurations.dart';
+import '../../models/config/toolbar/base_toolbar_configurations.dart';
 
-class QuillSimpleToolbarProvider extends InheritedWidget {
-  const QuillSimpleToolbarProvider({
+class QuillProvider extends InheritedWidget {
+  const QuillProvider({
+    required this.configurations,
+    required super.child,
+    super.key,
+  });
+
+  /// Controller object which establishes a link between a rich text document
+  /// and this editor.
+  ///
+  /// Must not be null.
+  final QuillConfigurations configurations;
+
+  @override
+  bool updateShouldNotify(covariant QuillProvider oldWidget) {
+    return oldWidget.configurations != configurations;
+  }
+
+  static QuillProvider? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<QuillProvider>();
+  }
+
+  static QuillProvider ofNotNull(BuildContext context) {
+    final provider = of(context);
+    if (provider == null) {
+      if (kDebugMode) {
+        debugPrint(
+          'The quill provider must be provided in the widget tree.',
+        );
+      }
+      throw ArgumentError.checkNotNull(
+        'You are using a widget in the Flutter quill library that require '
+            'The Quill provider widget to be in the parent widget tree '
+            'because '
+            'The provider is $provider. Please make sure to wrap this widget'
+            ' with'
+            ' QuillProvider widget. '
+            'You might using QuillEditor and QuillToolbar so make sure to'
+            ' wrap them with the quill provider widget and setup the required '
+            'configurations',
+        'QuillProvider',
+      );
+    }
+    return provider;
+  }
+
+  /// To pass the [QuillProvider] instance as value instead of creating new
+  /// widget
+  static QuillProvider value({
+    required QuillProvider value,
+    required Widget child,
+  }) {
+    return QuillProvider(
+      configurations: value.configurations,
+      child: child,
+    );
+  }
+}
+
+class QuillToolbarProvider extends InheritedWidget {
+  const QuillToolbarProvider({
     required super.child,
     required this.toolbarConfigurations,
     super.key,
   });
 
   /// The configurations for the toolbar widget of flutter quill
-  final QuillSimpleToolbarConfigurations toolbarConfigurations;
+  final QuillToolbarConfigurations toolbarConfigurations;
 
   @override
-  bool updateShouldNotify(covariant QuillSimpleToolbarProvider oldWidget) {
+  bool updateShouldNotify(covariant QuillToolbarProvider oldWidget) {
     return oldWidget.toolbarConfigurations != toolbarConfigurations;
   }
 
-  static QuillSimpleToolbarProvider? maybeOf(BuildContext context) {
+  static QuillToolbarProvider? of(BuildContext context) {
     /// The configurations for the quill editor widget of flutter quill
-    return context
-        .dependOnInheritedWidgetOfExactType<QuillSimpleToolbarProvider>();
+    return context.dependOnInheritedWidgetOfExactType<QuillToolbarProvider>();
   }
 
-  static QuillSimpleToolbarProvider of(BuildContext context) {
-    final provider = maybeOf(context);
+  static QuillToolbarProvider ofNotNull(BuildContext context) {
+    final provider = of(context);
     if (provider == null) {
       if (kDebugMode) {
         debugPrint(
@@ -44,19 +102,19 @@ class QuillSimpleToolbarProvider extends InheritedWidget {
             'You might using QuillToolbar so make sure to'
             ' wrap them with the quill provider widget and setup the required '
             'configurations',
-        'QuillSimpleToolbarProvider',
+        'QuillProvider',
       );
     }
     return provider;
   }
 
-  /// To pass the [QuillSimpleToolbarProvider] instance as value instead of creating
+  /// To pass the [QuillToolbarProvider] instance as value instead of creating
   /// new widget
-  static QuillSimpleToolbarProvider value({
-    required QuillSimpleToolbarProvider value,
+  static QuillToolbarProvider value({
+    required QuillToolbarProvider value,
     required Widget child,
   }) {
-    return QuillSimpleToolbarProvider(
+    return QuillToolbarProvider(
       toolbarConfigurations: value.toolbarConfigurations,
       child: child,
     );
@@ -64,28 +122,29 @@ class QuillSimpleToolbarProvider extends InheritedWidget {
 }
 
 // Not really needed
-class QuillToolbarProvider extends InheritedWidget {
-  const QuillToolbarProvider({
+class QuillBaseToolbarProvider extends InheritedWidget {
+  const QuillBaseToolbarProvider({
     required super.child,
     required this.toolbarConfigurations,
     super.key,
   });
 
   /// The configurations for the toolbar widget of flutter quill
-  final QuillToolbarConfigurations toolbarConfigurations;
+  final QuillBaseToolbarConfigurations toolbarConfigurations;
 
   @override
-  bool updateShouldNotify(covariant QuillToolbarProvider oldWidget) {
+  bool updateShouldNotify(covariant QuillBaseToolbarProvider oldWidget) {
     return oldWidget.toolbarConfigurations != toolbarConfigurations;
   }
 
-  static QuillToolbarProvider? maybeOf(BuildContext context) {
+  static QuillBaseToolbarProvider? of(BuildContext context) {
     /// The configurations for the quill editor widget of flutter quill
-    return context.dependOnInheritedWidgetOfExactType<QuillToolbarProvider>();
+    return context
+        .dependOnInheritedWidgetOfExactType<QuillBaseToolbarProvider>();
   }
 
-  static QuillToolbarProvider of(BuildContext context) {
-    final provider = maybeOf(context);
+  static QuillBaseToolbarProvider ofNotNull(BuildContext context) {
+    final provider = of(context);
     if (provider == null) {
       if (kDebugMode) {
         debugPrint(
@@ -102,19 +161,19 @@ class QuillToolbarProvider extends InheritedWidget {
             'You might using QuillBaseToolbar so make sure to'
             ' wrap them with the quill provider widget and setup the required '
             'configurations',
-        'QuillToolbarProvider',
+        'QuillProvider',
       );
     }
     return provider;
   }
 
-  /// To pass the [QuillToolbarConfigurations] instance as value
+  /// To pass the [QuillBaseToolbarConfigurations] instance as value
   /// instead of creating new widget
-  static QuillToolbarProvider value({
-    required QuillToolbarConfigurations value,
+  static QuillBaseToolbarProvider value({
+    required QuillBaseToolbarConfigurations value,
     required Widget child,
   }) {
-    return QuillToolbarProvider(
+    return QuillBaseToolbarProvider(
       toolbarConfigurations: value,
       child: child,
     );
@@ -136,13 +195,13 @@ class QuillEditorProvider extends InheritedWidget {
     return oldWidget.editorConfigurations != editorConfigurations;
   }
 
-  static QuillEditorProvider? maybeOf(BuildContext context) {
+  static QuillEditorProvider? of(BuildContext context) {
     /// The configurations for the quill editor widget of flutter quill
     return context.dependOnInheritedWidgetOfExactType<QuillEditorProvider>();
   }
 
-  static QuillEditorProvider of(BuildContext context) {
-    final provider = maybeOf(context);
+  static QuillEditorProvider ofNotNull(BuildContext context) {
+    final provider = of(context);
     if (provider == null) {
       if (kDebugMode) {
         debugPrint(
@@ -159,7 +218,7 @@ class QuillEditorProvider extends InheritedWidget {
             'You might using QuillEditor so make sure to'
             ' wrap them with the quill provider widget and setup the required '
             'configurations',
-        'QuillEditorProvider',
+        'QuillProvider',
       );
     }
     return provider;

@@ -1,15 +1,10 @@
 import 'dart:collection';
 
-import '../../../widgets/quill/embeds.dart';
+import '../../../widgets/embeds.dart';
 import '../style.dart';
 import 'leaf.dart';
 import 'line.dart';
 import 'node.dart';
-
-@Deprecated('Please use QuillContainer instead')
-
-/// For backward compatibility
-abstract base class Container<T extends Node?> extends QuillContainer<T> {}
 
 /// Container can accommodate other nodes.
 ///
@@ -19,7 +14,7 @@ abstract base class Container<T extends Node?> extends QuillContainer<T> {}
 ///
 /// Most of the operation handling logic is implemented by [Line]
 /// and [QuillText].
-abstract base class QuillContainer<T extends Node?> extends Node {
+abstract base class Container<T extends Node?> extends Node {
   final LinkedList<Node> _children = LinkedList<Node>();
 
   /// List of children.
@@ -69,7 +64,7 @@ abstract base class QuillContainer<T extends Node?> extends Node {
   }
 
   /// Moves children of this node to [newParent].
-  void moveChildToNewParent(QuillContainer? newParent) {
+  void moveChildToNewParent(Container? newParent) {
     if (isEmpty) {
       return;
     }
@@ -159,7 +154,7 @@ abstract base class QuillContainer<T extends Node?> extends Node {
   String toString() => _children.join('\n');
 }
 
-/// Result of a child query in a [QuillContainer].
+/// Result of a child query in a [Container].
 class ChildQuery {
   ChildQuery(this.node, this.offset);
 
@@ -168,7 +163,7 @@ class ChildQuery {
 
   /// Starting offset within the child [node] which points at the same
   /// character in the document as the original offset passed to
-  /// [QuillContainer.queryChild] method.
+  /// [Container.queryChild] method.
   final int offset;
 
   /// Returns `true` if there is no child node found, e.g. [node] is `null`.
